@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jethro's UTME Blitz | CBT Practice</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f1c40f;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f4f7f6; color: var(--dark); line-height: 1.6; }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        /* Branding */
+        .brand { text-align: center; padding: 20px; color: var(--primary); }
+        .brand h1 { font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Homepage */
+        #home-screen { text-align: center; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 50px; }
+        .instructions { text-align: left; background: var(--light); padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 5px solid var(--secondary); }
+        .btn-start { background: var(--success); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+        .btn-start:hover { background: #219150; }
+
+        /* Exam Header */
+        #exam-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .timer-box { font-size: 1.5rem; font-weight: bold; font-family: monospace; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 4px; }
+
+        /* Main Exam Layout */
+        #exam-container { display: grid; grid-template-columns: 1fr 300px; gap: 20px; margin-top: 20px; }
+        .question-area { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-height: 400px; position: relative; }
+        .subject-tab { display: inline-block; padding: 5px 15px; background: var(--secondary); color: white; border-radius: 20px; margin-bottom: 15px; font-weight: bold; }
+        .option { display: block; padding: 15px; margin: 10px 0; border: 2px solid var(--light); border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #f9f9f9; border-color: var(--secondary); }
+        .option.selected { border-color: var(--secondary); background: #ebf5fb; }
+        
+        /* Side Panel */
+        .side-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .num-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; max-height: 400px; overflow-y: auto; padding: 5px; }
+        .num-btn { aspect-ratio: 1; border: 1px solid #ddd; background: #eee; cursor: pointer; font-size: 0.8rem; border-radius: 3px; }
+        .num-btn.answered { background: var(--secondary); color: white; }
+        .num-btn.current { border: 2px solid var(--dark); font-weight: bold; }
+        .num-btn.correct { background: var(--success); color: white; }
+        .num-btn.wrong { background: var(--danger); color: white; }
+
+        /* Navigation */
+        .nav-controls { display: flex; justify-content: space-between; margin-top: 30px; }
+        .btn-nav { padding: 10px 25px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .btn-prev { background: var(--gray); color: white; }
+        .btn-next { background: var(--secondary); color: white; }
+        .btn-submit { background: var(--danger); color: white; padding: 15px 30px; width: 100%; margin-top: 20px; font-weight: bold; cursor: pointer; border-radius: 5px; border: none; }
+
+        /* Calculator Styles */
+        #calc-modal { position: fixed; bottom: 20px; left: 20px; width: 260px; background: #333; border-radius: 10px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; }
+        #calc-display { width: 100%; height: 50px; background: #eee; border: none; margin-bottom: 10px; text-align: right; padding: 10px; font-size: 1.2rem; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .calc-btn { padding: 10px; border: none; background: #555; color: white; cursor: pointer; border-radius: 4px; }
+        .calc-btn:hover { background: #777; }
+        .operator { background: #f39c12; }
+        
+        /* Result Page */
+        .result-card { background: white; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .score-big { font-size: 4rem; color: var(--secondary); font-weight: bold; margin: 20px 0; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; }
+        .stat-item { padding: 15px; background: var(--light); border-radius: 8px; }
+
+        /* Review Styles */
+        .review-correct { border-color: var(--success) !important; background: #e8f6ed !important; }
+        .review-wrong { border-color: var(--danger) !important; background: #fdeaea !important; }
+
+        @media (max-width: 768px) {
+            #exam-container { grid-template-columns: 1fr; }
+            #exam-header { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen" class="container">
+        <div class="brand">
+            <h1>Jethro's UTME Blitz</h1>
+            <p>Master the UTME with Speed and Accuracy</p>
+        </div>
+        <div class="instructions">
+            <h3>Examination Instructions:</h3>
+            <ul>
+                <li>Total Questions: 180 (English: 60, Others: 40 each)</li>
+                <li>Time Allowed: 2 Hours (120 Minutes)</li>
+                <li>Each question has only one correct option.</li>
+                <li>Your final score will be scaled to 400 marks.</li>
+                <li>Use the built-in calculator if needed for calculations.</li>
+            </ul>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="student-name" placeholder="Enter Full Name" style="padding: 12px; width: 300px; border-radius: 5px; border: 1px solid #ccc;">
+        </div>
+        <button class="btn-start" onclick="startExam()">START EXAM</button>
+    </div>
+
+    <div id="exam-screen" class="hidden">
+        <header id="exam-header">
+            <div id="header-brand">Jethro's UTME Blitz</div>
+            <div id="header-student">Candidate: <span id="display-name">Guest</span></div>
+            <div class="timer-box" id="timer">120:00</div>
+            <button onclick="toggleCalc()" style="background: var(--warning); border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Calculator</button>
+        </header>
+
+        <div class="container" id="exam-container">
+            <main>
+                <div class="question-area" id="question-area">
+                    <span class="subject-tab" id="subject-name">Subject</span>
+                    <h3 id="question-text">Question Loading...</h3>
+                    <div id="options-container">
+                        </div>
+                </div>
+                <div class="nav-controls">
+                    <button class="btn-nav btn-prev" onclick="prevQuestion()">Previous</button>
+                    <button class="btn-nav btn-next" onclick="nextQuestion()">Next</button>
+                </div>
+            </main>
+
+            <aside class="side-panel">
+                <h3>Question Panel</h3>
+                <div class="num-grid" id="number-grid"></div>
+                <button class="btn-submit" onclick="confirmSubmit()">SUBMIT EXAM</button>
+            </aside>
+        </div>
+    </div>
+
+    <div id="calc-modal" class="hidden">
+        <div style="display: flex; justify-content: space-between; color: white; margin-bottom: 5px;">
+            <span>Calculator</span>
+            <span onclick="toggleCalc()" style="cursor: pointer;">&times;</span>
+        </div>
+        <input type="text" id="calc-display" readonly>
+        <div class="calc-grid">
+            <button class="calc-btn" onclick="clearCalc()">C</button>
+            <button class="calc-btn" onclick="btnClick('(')">(</button>
+            <button class="calc-btn" onclick="btnClick(')')">)</button>
+            <button class="calc-btn operator" onclick="btnClick('/')">÷</button>
+            <button class="calc-btn" onclick="btnClick('7')">7</button>
+            <button class="calc-btn" onclick="btnClick('8')">8</button>
+            <button class="calc-btn" onclick="btnClick('9')">9</button>
+            <button class="calc-btn operator" onclick="btnClick('*')">&
